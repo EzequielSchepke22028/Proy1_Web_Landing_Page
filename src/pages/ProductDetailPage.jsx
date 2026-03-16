@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getProduct } from '../api/products';
+import useCartStore from '../store/cartStore';
 import Navbar from '../components/Navbar';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const addItem = useCartStore(s => s.addItem);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
@@ -52,7 +54,7 @@ export default function ProductDetailPage() {
               {product.image_url ? (
                 <img src={product.image_url} alt={product.title} className="max-h-80 object-contain" />
               ) : (
-                <div className="text-gray-300 text-8xl">í»ï¸</div>
+                <div className="text-gray-300 text-8xl">ğŸ›ï¸</div>
               )}
             </div>
 
@@ -68,8 +70,8 @@ export default function ProductDetailPage() {
                   <p className="text-gray-600 mb-6 text-sm leading-relaxed">{product.description}</p>
                 )}
                 <div className="flex items-center gap-4 text-sm text-gray-400 mb-6">
-                  <span>í± {product.views} vistas</span>
-                  <span>í³¦ {product.sold_count} vendidos</span>
+                  <span>ğŸ‘ {product.views} vistas</span>
+                  <span>ğŸ“¦ {product.sold_count} vendidos</span>
                 </div>
               </div>
 
@@ -82,9 +84,10 @@ export default function ProductDetailPage() {
                 </p>
                 <button
                   disabled={product.stock === 0}
+                  onClick={() => { addItem(product); navigate('/cart'); }}
                   className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold text-lg"
                 >
-                  í»’ Agregar al carrito
+                  ğŸ›’ Agregar al carrito
                 </button>
               </div>
             </div>

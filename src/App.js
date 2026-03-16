@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider }    from './context/AuthContext';
-import ProtectedRoute      from './components/ProtectedRoute';
-import LoginPage           from './pages/LoginPage';
-import RegisterPage        from './pages/RegisterPage';
-import DashboardPage       from './pages/DashboardPage';
-import CatalogPage         from './pages/CatalogPage';
-import NewProductPage      from './pages/NewProductPage';
-import ProductDetailPage   from './pages/ProductDetailPage';
-import CartPage            from './pages/CartPage';
+import { AuthProvider }       from './context/AuthContext';
+import ProtectedRoute         from './components/ProtectedRoute';
+import LoginPage              from './pages/LoginPage';
+import RegisterPage           from './pages/RegisterPage';
+import DashboardPage          from './pages/DashboardPage';
+import CatalogPage            from './pages/CatalogPage';
+import NewProductPage         from './pages/NewProductPage';
+import ProductDetailPage      from './pages/ProductDetailPage';
+import CartPage               from './pages/CartPage';
+import SellerDashboardPage    from './pages/SellerDashboardPage';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="products/new" element={<NewProductPage />} />
             <Route path="products/:id" element={<ProductDetailPage />} />
             <Route path="cart"         element={<CartPage />} />
+            <Route path="seller"       element={<SellerDashboardPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

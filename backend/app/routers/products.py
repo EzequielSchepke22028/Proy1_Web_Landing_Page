@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from typing import Optional
+from typing import Optional, List
 from app.database import get_db
 from app import models, schemas
 from app.auth import get_current_user
@@ -21,6 +21,16 @@ def create_product(
     db.commit()
     db.refresh(product)
     return product
+
+@router.get("/mine", response_model=List[schemas.ProductOut])
+def get_my_products(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    products = db.query(models.Product).filter(
+        models.Product.owner_id == current_user.id
+    ).order_by(models.Product.created_at.desc()).all()
+    return products
 
 @router.get("/", response_model=schemas.ProductPage)
 def list_products(

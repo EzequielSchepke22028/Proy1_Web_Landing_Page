@@ -42,13 +42,16 @@ export default function SellerDashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="max-w-6xl mx-auto px-4 py-8">
+
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Panel del vendedor</h1>
             <p className="text-gray-500 text-sm mt-1">Hola {user?.full_name}</p>
           </div>
-          <Link to="/products/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+          <Link
+            to="/products/new"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
             + Publicar producto
           </Link>
         </div>
@@ -76,7 +79,7 @@ export default function SellerDashboardPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
-            <p className="text-5xl mb-4">Ì≥¶</p>
+            <p className="text-5xl mb-4">üì¶</p>
             <p className="text-lg">No publicaste ningun producto todavia</p>
             <Link to="/products/new" className="text-blue-600 hover:underline mt-2 block">
               Publicar mi primer producto
@@ -103,7 +106,7 @@ export default function SellerDashboardPage() {
                         <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                           {p.image_url
                             ? <img src={p.image_url} alt={p.title} className="w-full h-full object-contain" />
-                            : <div className="w-full h-full flex items-center justify-center text-lg">ÌªçÔ∏è</div>
+                            : <div className="w-full h-full flex items-center justify-center text-lg">üõçÔ∏è</div>
                           }
                         </div>
                         <div>
@@ -132,6 +135,8 @@ export default function SellerDashboardPage() {
                       <div className="flex gap-3">
                         <Link to={`/products/${p.id}`}
                           className="text-xs text-blue-600 hover:underline">Ver</Link>
+                        <Link to={`/products/${p.id}/edit`}
+                          className="text-xs text-green-600 hover:underline">Editar</Link>
                         <button
                           onClick={() => toggleProduct(p.id, p.is_active)}
                           className="text-xs text-gray-500 hover:text-red-500">

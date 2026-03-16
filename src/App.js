@@ -9,6 +9,7 @@ import NewProductPage         from './pages/NewProductPage';
 import ProductDetailPage      from './pages/ProductDetailPage';
 import CartPage               from './pages/CartPage';
 import SellerDashboardPage    from './pages/SellerDashboardPage';
+import EditProductPage        from './pages/EditProductPage';
 
 export default function App() {
   return (
@@ -19,12 +20,13 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<ProtectedRoute />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard"    element={<DashboardPage />} />
-            <Route path="catalog"      element={<CatalogPage />} />
-            <Route path="products/new" element={<NewProductPage />} />
-            <Route path="products/:id" element={<ProductDetailPage />} />
-            <Route path="cart"         element={<CartPage />} />
-            <Route path="seller"       element={<SellerDashboardPage />} />
+            <Route path="dashboard"        element={<DashboardPage />} />
+            <Route path="catalog"          element={<CatalogPage />} />
+            <Route path="products/new"     element={<NewProductPage />} />
+            <Route path="products/:id"     element={<ProductDetailPage />} />
+            <Route path="products/:id/edit" element={<EditProductPage />} />
+            <Route path="cart"             element={<CartPage />} />
+            <Route path="seller"           element={<SellerDashboardPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -3,6 +3,123 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getProduct } from '../api/products';
 import useCartStore from '../store/cartStore';
 import Navbar from '../components/Navbar';
+import ProductCard from '../components/ProductCard';
+import api from '../api/api';
+
+export default function ProductDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const addItem = useCartStore(s => s.addItem);
+  const [product, setProduct]   = useState(null);
+  const [related, setRelated]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getProduct(id);
+        setProduct(res.data);
+        const rel = await api.get(`/recommendations/related/${id}`);
+        setRelated(rel.data);
+      } catch (e) {
+        setError('Producto no encontrado');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <p className="text-gray-500 text-lg">{error}</p>
+      <Link to="/catalog" className="text-blue-600 hover:underline">Volver al catálogo</Link>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-800 mb-6 flex items-center gap-1">
+          ← Volver
+        </button>
+
+        <div className="bg-white rounded-2xl shadow overflow-hidden mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="bg-gray-50 flex items-center justify-center p-8 min-h-80">
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.title} className="max-h-80 object-contain" />
+              ) : (
+                <div className="text-gray-300 text-8xl">🛍️</div>
+              )}
+            </div>
+
+            <div className="p-8 flex flex-col justify-between">
+              <div>
+                {product.category && (
+                  <span className="text-xs text-blue-600 font-semibold uppercase tracking-wide">
+                    {product.category}
+                  </span>
+                )}
+                <h1 className="text-2xl font-bold text-gray-800 mt-2 mb-4">{product.title}</h1>
+                {product.description && (
+                  <p className="text-gray-600 mb-6 text-sm leading-relaxed">{product.description}</p>
+                )}
+                <div className="flex items-center gap-4 text-sm text-gray-400 mb-6">
+                  <span>👁 {product.views} vistas</span>
+                  <span>📦 {product.sold_count} vendidos</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-4xl font-bold text-blue-600 mb-2">
+                  ${Number(product.price).toLocaleString('es-AR')}
+                </p>
+                <p className={`text-sm mb-6 font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                  {product.stock > 0 ? `✓ ${product.stock} disponibles` : '✗ Sin stock'}
+                </p>
+                <button
+                  disabled={product.stock === 0}
+                  onClick={() => { addItem(product); navigate('/cart'); }}
+                  className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold text-lg"
+                >
+                  🛒 Agregar al carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {related.length > 0 && (
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              También te puede interesar
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {related.map(p => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+/*import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getProduct } from '../api/products';
+import useCartStore from '../store/cartStore';
+import Navbar from '../components/Navbar';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -97,4 +214,4 @@ export default function ProductDetailPage() {
       </div>
     </div>
   );
-}
+}*/

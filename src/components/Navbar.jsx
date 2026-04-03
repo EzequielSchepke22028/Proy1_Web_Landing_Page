@@ -34,6 +34,7 @@ export default function Navbar() {
       </div>
       <div className="flex items-center gap-6">
         <Link to="/catalog" className={'text-sm ' + isActive('/catalog')}>Catalogo</Link>
+        <Link to="/orders" className="text-gray-600 hover:text-blue-600 transition-colors">Mis compras</Link>
         <Link to="/products/new" className={'text-sm ' + isActive('/products/new')}>Publicar</Link>
         <Link to="/cart" className="relative text-gray-600 hover:text-blue-600">
           <span>Carrito</span>

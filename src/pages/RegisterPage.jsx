@@ -1,60 +1,50 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/api';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
-  const [email, setEmail]         = useState('');
-  const [username, setUsername]   = useState('');
   const [fullName, setFullName]   = useState('');
+  const [username, setUsername]   = useState('');
+  const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
   const [phone, setPhone]         = useState('');
+  const [error, setError]         = useState('');
+  const [loading, setLoading]     = useState(false);
 
-  const handleSubmit = useCallback(async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://127.0.0.1:8080/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email, username, full_name: fullName, password, phone: phone || null
-        })
+      const res = await api.post('/users/register', {
+        full_name: fullName,
+        username,
+        email,
+        password,
+        phone,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Error al registrarse');
-      const loginRes = await fetch('http://127.0.0.1:8080/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const loginData = await loginRes.json();
-      if (!loginRes.ok) throw new Error('Error al iniciar sesion');
-      login(loginData);
-      navigate('/dashboard');
+      login(res.data.access_token, res.data.user);
+      navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.detail || 'Error al registrarse');
     } finally {
       setLoading(false);
     }
-  }, [email, username, fullName, password, phone, login, navigate]);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold">
-          <span className="text-blue-600">Market</span>
-          <span className="text-gray-800">Eze</span>
-        </h1>
-        <p className="text-gray-500 mt-2">Creá tu cuenta gratis</p>
-      </div>
-
-      <div className="max-w-md mx-auto w-full bg-white rounded-2xl shadow p-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">Registro</h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold">
+            <span className="text-blue-600">Market</span>
+            <span className="text-gray-800">Eze</span>
+          </h1>
+          <p className="text-gray-500 mt-1">Creá tu cuenta gratis</p>
+        </div>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
@@ -64,18 +54,16 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo *</label>
             <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              type="text"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
               required
-              autoComplete="email"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="tu@email.com"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Juan Pérez"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
             <input
@@ -83,25 +71,21 @@ export default function RegisterPage() {
               value={username}
               onChange={e => setUsername(e.target.value)}
               required
-              autoComplete="username"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="minombre"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="juanperez"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
             <input
-              type="text"
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               required
-              autoComplete="name"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Juan Perez"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="juan@email.com"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña *</label>
             <input
@@ -109,28 +93,24 @@ export default function RegisterPage() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              autoComplete="new-password"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="mínimo 8 caracteres"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="••••••••"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
             <input
               type="text"
               value={phone}
               onChange={e => setPhone(e.target.value)}
-              autoComplete="tel"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="11 1234-5678"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="+54 11 1234-5678"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold mt-2"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50"
           >
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
